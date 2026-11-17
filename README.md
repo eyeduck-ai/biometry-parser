@@ -4,6 +4,16 @@
 
 輸入支援具有文字層的 PDF、掃描／圖片型 PDF，以及 PNG、JPEG、TIFF、BMP、WebP 等圖檔。核心不包含網頁工作站、模型權重、研究用報告或 API key。
 
+## 名稱與套件邊界
+
+| 用途 | 統一名稱 |
+|---|---|
+| GitHub repo／安裝套件 | `biometry-parser` |
+| Python import／模組執行 | `biometry_parser` |
+| CLI 指令 | `biometry-parser` |
+
+對外主要入口是 `BiometryParser.parse()`，CLI 也呼叫同一份解析 API。報告版面與欄位規則、辨識器接頭、跨頁合併各自分工；本機 OCR 是選用依賴，匯入時不載入模型。網頁呈現、人工答案管理、模型比較評測與 API key 儲存由引用此 kit 的應用專案負責；本 repo 不提供 Web server 或 UI。
+
 ## 處理流程
 
 1. 逐頁檢查 PDF 文字層與已支援的報告版面。
@@ -69,12 +79,14 @@ Path("result.json").write_text(result.model_dump_json(indent=2), encoding="utf-8
 result = BiometryParser(backend="native").parse("report.pdf")
 ```
 
-也可用CLI輸出同一份JSON：
+也可用 `biometry-parser` CLI 輸出同一份 JSON：
 
 ```shell
-python -m biometry_parser extract report.pdf -o result.json
-python -m biometry_parser extract report.pdf --backend native -o result.json
+biometry-parser extract report.pdf -o result.json
+biometry-parser extract report.pdf --backend native -o result.json
 ```
+
+也支援等效的 `python -m biometry_parser extract ...`。
 
 CLI退出碼0表示成功產生可用擷取結果，**不表示已臨床驗證**；2表示部分／失敗／不支援等需檢查的結果，1表示輸入或設定例外。請以JSON內的狀態及issues作為判斷依據。
 

@@ -25,7 +25,7 @@ def reviewed(tmp_path):
         "reviewed": True, "masks": [{"x0":0,"y0":0,"x1":1,"y1":.25}],
         "header_added": {"text":"ZEISS IOLMaster 700", "contains_answers":False,
                          "origin":"synthetic_brand_context"}}
-    manifest = {"kind":"biometry-ocr-sanitized-inputs", "version":"1.0", "cases":[{
+    manifest = {"kind":"reviewed_page_copies", "version":"1.0", "cases":[{
         "case_id":"fixture", "source_sha256":source_hash, "source_page_count":8,
         "excluded_fields":["patient_id","gender","measurement_date"], "pages":[entry]}]}
     manifest_path = directory / "manifest.json"
