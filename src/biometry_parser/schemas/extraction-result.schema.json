@@ -1,0 +1,980 @@
+{
+  "$defs": {
+    "Box": {
+      "additionalProperties": false,
+      "description": "Normalized coordinates on the displayed original page, top-left origin.",
+      "properties": {
+        "x0": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "X0",
+          "type": "number"
+        },
+        "y0": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Y0",
+          "type": "number"
+        },
+        "x1": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "X1",
+          "type": "number"
+        },
+        "y1": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Y1",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "title": "Box",
+      "type": "object"
+    },
+    "DataStatus": {
+      "description": "Source facts, independent of execution success and verification.",
+      "enum": [
+        "present",
+        "not_found",
+        "absent",
+        "blank",
+        "not_measured",
+        "unreadable",
+        "conflict"
+      ],
+      "title": "DataStatus",
+      "type": "string"
+    },
+    "EyeResult": {
+      "additionalProperties": false,
+      "properties": {
+        "al": {
+          "$ref": "#/$defs/FieldResult"
+        },
+        "acd": {
+          "$ref": "#/$defs/FieldResult"
+        },
+        "lt": {
+          "$ref": "#/$defs/FieldResult"
+        },
+        "cct": {
+          "$ref": "#/$defs/FieldResult"
+        },
+        "wtw": {
+          "$ref": "#/$defs/FieldResult"
+        },
+        "mean_k": {
+          "$ref": "#/$defs/FieldResult"
+        },
+        "corneal_astigmatism": {
+          "$ref": "#/$defs/FieldResult"
+        },
+        "corneal_astigmatism_axis": {
+          "$ref": "#/$defs/FieldResult"
+        },
+        "pupil": {
+          "$ref": "#/$defs/FieldResult"
+        },
+        "k1": {
+          "$ref": "#/$defs/Keratometry"
+        },
+        "k2": {
+          "$ref": "#/$defs/Keratometry"
+        },
+        "tk1": {
+          "$ref": "#/$defs/Keratometry"
+        },
+        "tk2": {
+          "$ref": "#/$defs/Keratometry"
+        }
+      },
+      "title": "EyeResult",
+      "type": "object"
+    },
+    "FieldResult": {
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "data_status": {
+          "$ref": "#/$defs/DataStatus",
+          "default": "not_found"
+        },
+        "candidate_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Candidate Value"
+        },
+        "verification_status": {
+          "default": "unverified",
+          "enum": [
+            "unverified",
+            "cross_checked"
+          ],
+          "title": "Verification Status",
+          "type": "string"
+        },
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/Observation"
+          },
+          "title": "Candidates",
+          "type": "array"
+        }
+      },
+      "title": "FieldResult",
+      "type": "object"
+    },
+    "IOLCalculation": {
+      "additionalProperties": false,
+      "description": "Unverified table-level source evidence, separate from biometric values.",
+      "properties": {
+        "table_id": {
+          "title": "Table Id",
+          "type": "string"
+        },
+        "eye": {
+          "anyOf": [
+            {
+              "enum": [
+                "OD",
+                "OS"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Eye"
+        },
+        "lens_model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lens Model"
+        },
+        "lens_type": {
+          "default": "unknown",
+          "enum": [
+            "toric",
+            "non_toric",
+            "unknown"
+          ],
+          "title": "Lens Type",
+          "type": "string"
+        },
+        "formula": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Formula"
+        },
+        "keratometry_source": {
+          "default": "unknown",
+          "enum": [
+            "K",
+            "TK",
+            "unknown"
+          ],
+          "title": "Keratometry Source",
+          "type": "string"
+        },
+        "target_refraction": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Target Refraction"
+        },
+        "constants": {
+          "items": {
+            "$ref": "#/$defs/IOLConstantClaim"
+          },
+          "title": "Constants",
+          "type": "array"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/IOLRow"
+          },
+          "title": "Rows",
+          "type": "array"
+        },
+        "page_number": {
+          "minimum": 1,
+          "title": "Page Number",
+          "type": "integer"
+        },
+        "bbox": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Box"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "raw_text": {
+          "default": "",
+          "title": "Raw Text",
+          "type": "string"
+        },
+        "provider_id": {
+          "default": "",
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "profile_id": {
+          "default": "",
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "model_id": {
+          "default": "",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "model_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Hash"
+        },
+        "family": {
+          "default": "",
+          "title": "Family",
+          "type": "string"
+        },
+        "flags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Flags",
+          "type": "array"
+        },
+        "verification_status": {
+          "default": "unverified",
+          "enum": [
+            "unverified",
+            "cross_checked"
+          ],
+          "title": "Verification Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "table_id",
+        "page_number"
+      ],
+      "title": "IOLCalculation",
+      "type": "object"
+    },
+    "IOLConstantClaim": {
+      "additionalProperties": false,
+      "description": "A printed lens/formula constant; values may be numeric or 'Default'.",
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        },
+        "raw_text": {
+          "default": "",
+          "title": "Raw Text",
+          "type": "string"
+        },
+        "bbox": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Box"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "title": "IOLConstantClaim",
+      "type": "object"
+    },
+    "IOLRow": {
+      "additionalProperties": false,
+      "properties": {
+        "iol_power": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Iol Power"
+        },
+        "predicted_refraction": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Predicted Refraction"
+        },
+        "toric_power": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Toric Power"
+        },
+        "axis": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Axis"
+        },
+        "row_kind": {
+          "default": "candidate",
+          "enum": [
+            "candidate",
+            "emmetropia",
+            "unknown"
+          ],
+          "title": "Row Kind",
+          "type": "string"
+        },
+        "selection": {
+          "default": "unknown",
+          "enum": [
+            "marked",
+            "not_marked",
+            "unknown"
+          ],
+          "title": "Selection",
+          "type": "string"
+        },
+        "selection_evidence": {
+          "default": "",
+          "title": "Selection Evidence",
+          "type": "string"
+        },
+        "highlight_status": {
+          "default": "unknown",
+          "enum": [
+            "highlighted",
+            "not_highlighted",
+            "unknown"
+          ],
+          "title": "Highlight Status",
+          "type": "string"
+        },
+        "highlight_evidence": {
+          "default": "",
+          "title": "Highlight Evidence",
+          "type": "string"
+        },
+        "raw_text": {
+          "default": "",
+          "title": "Raw Text",
+          "type": "string"
+        },
+        "bbox": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Box"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "flags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Flags",
+          "type": "array"
+        }
+      },
+      "title": "IOLRow",
+      "type": "object"
+    },
+    "Issue": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "page_number": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page Number"
+        },
+        "field": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Field"
+        },
+        "eye": {
+          "anyOf": [
+            {
+              "enum": [
+                "OD",
+                "OS"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Eye"
+        },
+        "profile_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Profile Id"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "Issue",
+      "type": "object"
+    },
+    "Keratometry": {
+      "additionalProperties": false,
+      "properties": {
+        "power": {
+          "$ref": "#/$defs/FieldResult"
+        },
+        "axis": {
+          "$ref": "#/$defs/FieldResult"
+        }
+      },
+      "title": "Keratometry",
+      "type": "object"
+    },
+    "Observation": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "title": "Field",
+          "type": "string"
+        },
+        "eye": {
+          "anyOf": [
+            {
+              "enum": [
+                "OD",
+                "OS"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Eye"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "status": {
+          "default": "present",
+          "enum": [
+            "present",
+            "not_found",
+            "absent",
+            "blank",
+            "not_measured",
+            "unreadable",
+            "not_reported"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "page_number": {
+          "minimum": 1,
+          "title": "Page Number",
+          "type": "integer"
+        },
+        "bbox": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Box"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "raw_label": {
+          "default": "",
+          "title": "Raw Label",
+          "type": "string"
+        },
+        "raw_text": {
+          "default": "",
+          "title": "Raw Text",
+          "type": "string"
+        },
+        "provider_id": {
+          "default": "",
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "profile_id": {
+          "default": "",
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "model_id": {
+          "default": "",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "model_hash": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Hash"
+        },
+        "family": {
+          "default": "",
+          "title": "Family",
+          "type": "string"
+        },
+        "independence_group": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Independence Group"
+        },
+        "role": {
+          "default": "summary",
+          "enum": [
+            "summary",
+            "individual",
+            "unknown"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "flags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Flags",
+          "type": "array"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "confidence_scale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence Scale"
+        },
+        "state_evidence": {
+          "default": "legacy_unspecified",
+          "enum": [
+            "legacy_unspecified",
+            "none",
+            "label_only",
+            "provider_assertion",
+            "explicit_marker",
+            "confirmed_empty_region",
+            "human_review",
+            "verified_template"
+          ],
+          "title": "State Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field",
+        "page_number"
+      ],
+      "title": "Observation",
+      "type": "object"
+    },
+    "RunRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "profile_id": {
+          "title": "Profile Id",
+          "type": "string"
+        },
+        "provider_id": {
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "model_id": {
+          "default": "",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "family": {
+          "default": "",
+          "title": "Family",
+          "type": "string"
+        },
+        "outcome": {
+          "default": "ok",
+          "enum": [
+            "ok",
+            "partial",
+            "error",
+            "unavailable"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "observations": {
+          "items": {
+            "$ref": "#/$defs/Observation"
+          },
+          "title": "Observations",
+          "type": "array"
+        },
+        "issues": {
+          "items": {
+            "$ref": "#/$defs/Issue"
+          },
+          "title": "Issues",
+          "type": "array"
+        },
+        "elapsed_seconds": {
+          "default": 0,
+          "title": "Elapsed Seconds",
+          "type": "number"
+        },
+        "startup_seconds": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Startup Seconds"
+        },
+        "page_seconds": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Page Seconds",
+          "type": "array"
+        },
+        "peak_rss_bytes": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Peak Rss Bytes"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "iol_calculations": {
+          "items": {
+            "$ref": "#/$defs/IOLCalculation"
+          },
+          "title": "Iol Calculations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "profile_id",
+        "provider_id"
+      ],
+      "title": "RunRecord",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "verified",
+        "unverified",
+        "not_reported",
+        "not_found",
+        "absent",
+        "blank",
+        "not_measured",
+        "unreadable",
+        "conflict",
+        "error"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "default": "1.2",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_sha256": {
+      "title": "Source Sha256",
+      "type": "string"
+    },
+    "workflow": {
+      "title": "Workflow",
+      "type": "string"
+    },
+    "patient_id": {
+      "$ref": "#/$defs/FieldResult"
+    },
+    "gender": {
+      "$ref": "#/$defs/FieldResult"
+    },
+    "measurement_date": {
+      "$ref": "#/$defs/FieldResult"
+    },
+    "eyes": {
+      "additionalProperties": {
+        "$ref": "#/$defs/EyeResult"
+      },
+      "propertyNames": {
+        "enum": [
+          "OD",
+          "OS"
+        ]
+      },
+      "title": "Eyes",
+      "type": "object"
+    },
+    "verification_state": {
+      "default": "unverified",
+      "enum": [
+        "verified",
+        "unverified",
+        "needs_review",
+        "error"
+      ],
+      "title": "Verification State",
+      "type": "string"
+    },
+    "completeness": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Completeness",
+      "type": "object"
+    },
+    "runs": {
+      "items": {
+        "$ref": "#/$defs/RunRecord"
+      },
+      "title": "Runs",
+      "type": "array"
+    },
+    "issues": {
+      "items": {
+        "$ref": "#/$defs/Issue"
+      },
+      "title": "Issues",
+      "type": "array"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    },
+    "iol_calculations": {
+      "items": {
+        "$ref": "#/$defs/IOLCalculation"
+      },
+      "title": "Iol Calculations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "source_sha256",
+    "workflow"
+  ],
+  "title": "ExtractionResult",
+  "type": "object"
+}

@@ -1,0 +1,75 @@
+# Independent, data-only settings. No report files or credentials are bundled.
+workflow = "local"
+date_order = "mdy"
+dpi = 300
+max_pages = 50
+max_page_pixels = 20000000
+
+[profiles.native]
+adapter = "native_pdf"
+
+[profiles.rapid_v6_small]
+adapter = "rapidocr"
+model = "ppocr-v6-small"
+timeout_seconds = 600
+[profiles.rapid_v6_small.options]
+threads = 2
+rec_batch_num = 1
+text_score = 0.0
+# Optional, shared with the models download command:
+# cache_dir = "./models"
+
+[profiles.gemini_lite]
+adapter = "gemini"
+model = "gemini-3.5-flash-lite"
+api_key_env = "GEMINI_API_KEY"
+timeout_seconds = 600
+[profiles.gemini_lite.options]
+max_image_side = 3072
+max_tokens = 32768
+retries = 0
+
+[profiles.gemini_flash]
+adapter = "gemini"
+model = "gemini-3.6-flash"
+api_key_env = "GEMINI_API_KEY"
+timeout_seconds = 600
+[profiles.gemini_flash.options]
+max_image_side = 3072
+max_tokens = 32768
+omit_sampling_parameters = true
+retries = 0
+
+[profiles.paddle_api]
+adapter = "paddleocr_api"
+model = "PP-OCRv6"
+api_key_env = "PADDLEOCR_ACCESS_TOKEN"
+base_url = "https://paddleocr.aistudio-app.com"
+timeout_seconds = 600
+[profiles.paddle_api.options]
+request_timeout_seconds = 120
+poll_interval_seconds = 1
+
+[workflows.local]
+profiles = ["rapid_v6_small"]
+mode = "single"
+native_first = true
+
+[workflows.native_only]
+profiles = ["native"]
+mode = "single"
+
+[workflows.gemini]
+profiles = ["gemini_lite"]
+mode = "single"
+native_first = true
+
+[workflows.gemini36]
+profiles = ["gemini_flash"]
+mode = "single"
+native_first = true
+
+[workflows.paddle_api]
+profiles = ["paddle_api"]
+mode = "single"
+native_first = true

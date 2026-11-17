@@ -1,0 +1,57 @@
+name: Tests and wheel
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Build distributions
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build
+      - name: Install the built wheel with base test dependencies
+        shell: python
+        run: |
+          from pathlib import Path
+          import subprocess, sys
+          wheel = next(Path("dist").glob("*.whl")).resolve()
+          subprocess.check_call([sys.executable, "-m", "pip", "install", str(wheel) + "[test]"])
+      - name: Test the installed package outside the checkout
+        shell: python
+        run: |
+          from pathlib import Path
+          import os, shutil, subprocess, sys, tempfile
+          repository = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          wheel = next((repository / "dist").glob("*.whl")).resolve()
+          directory = Path(tempfile.mkdtemp(prefix="biometry-parser-tests-", dir=os.environ["RUNNER_TEMP"]))
+          shutil.copytree(repository / "tests", directory / "tests", ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+          environment = os.environ.copy()
+          environment.pop("PYTHONPATH", None)
+          environment["BIOMETRY_PARSER_TEST_WHEEL"] = str(wheel)
+          environment["BIOMETRY_PARSER_REPO"] = str(repository)
+          environment["PYTHONIOENCODING"] = "utf-8"
+          probe = "import pathlib, biometry_parser; assert not pathlib.Path(biometry_parser.__file__).resolve().is_relative_to(pathlib.Path(%r))" % str(repository)
+          subprocess.check_call([sys.executable, "-c", probe], cwd=directory, env=environment)
+          subprocess.check_call([sys.executable, "-m", "pytest", "-q", "tests"], cwd=directory, env=environment)

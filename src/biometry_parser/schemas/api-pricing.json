@@ -1,0 +1,50 @@
+{
+  "as_of": "2026-11-14",
+  "gemini": {
+    "gemini-3.5-flash-lite": {
+      "currency": "USD",
+      "input_per_million_tokens": 0.3,
+      "output_per_million_tokens": 2.5,
+      "per_page": null,
+      "per_request": null,
+      "source": "https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite",
+      "as_of": "2026-11-14",
+      "basis": "paid_standard_reference",
+      "free_tier_available": true,
+      "valid_through": null,
+      "future_prices": []
+    },
+    "gemini-3.6-flash": {
+      "currency": "USD",
+      "input_per_million_tokens": 0.75,
+      "output_per_million_tokens": 3.75,
+      "per_page": null,
+      "per_request": null,
+      "source": "https://aistudio.google.com/docs/pricing#gemini-3.6-flash",
+      "as_of": "2026-11-15",
+      "basis": "paid_standard_reference",
+      "free_tier_available": true,
+      "valid_through": "2026-12-31",
+      "future_prices": [
+        {
+          "effective_from": "2027-01-01",
+          "text_image_video_input": 1.5,
+          "output_including_thinking": 7.5
+        }
+      ]
+    }
+  },
+  "paddleocr_api": {
+    "currency": null,
+    "input_per_million_tokens": null,
+    "output_per_million_tokens": null,
+    "per_page": null,
+    "per_request": null,
+    "source": "https://www.paddleocr.ai/main/en/version3.x/inference_deployment/serving/paddleocr_official_api/python.html",
+    "as_of": "2026-11-14",
+    "basis": "hosted_paid_unit_price_not_published",
+    "free_tier_available": true,
+    "free_pages_per_day_per_user_per_model": 20000,
+    "actual_charge_usd": null
+  }
+}
