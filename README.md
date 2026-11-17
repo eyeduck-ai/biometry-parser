@@ -35,6 +35,15 @@ python -m biometry_parser models download ppocr-v6-small
 python -m pip install "/path/to/biometry-parser[ocr]"
 ```
 
+從公開 GitHub repo 安裝（需要 Git）：
+
+```shell
+python -m pip install "biometry-parser[ocr] @ git+https://github.com/eyeduck-ai/biometry-parser.git"
+python -m biometry_parser models download ppocr-v6-small
+```
+
+僅使用原生 PDF 或 API 時可省略 `[ocr]`。正式部署可在 Git URL 後附 `@<commit SHA>` 固定版本。
+
 套件名稱為 `biometry-parser`，Python import 名稱為 `biometry_parser`。匯入套件或建立設定不會自動下載權重、載入 OCR 模型或發出 API 請求。模型檔不包含在 wheel；下載會檢查鎖定的 SHA-256。
 
 ## 最小用法
