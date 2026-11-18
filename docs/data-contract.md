@@ -70,3 +70,58 @@ elif field.candidate_value is not None:
 `target_refraction` 與每列的 `predicted_refraction` 是不同資料。明確的plano目標可正規化為0；只有Emmetropia字樣而未印數字時，不補造0。
 
 `highlight_status` 描述灰底／粗體等版面提示，`selection` 則需要明確選定證據；灰底、中央列及接近plano均不等於已選擇植入。原生快速路徑不為讀灰底而額外渲染，影像獨有的提示可維持unknown。
+
+
+## Compact exchange 與 Biometry-Clip
+
+完整結果保留來源觀察，適合核對與稽核；跨專案傳輸可另外產生較小的
+canonical 1.2 文件。此為有損的傳輸設定，不取代完整結果或原始報告：
+
+```python
+import json
+from pathlib import Path
+from biometry_parser import ExtractionResult, to_exchange_document
+
+document = to_exchange_document(result)
+Path("exchange.json").write_text(
+    json.dumps(document, ensure_ascii=False, indent=2), encoding="utf-8")
+loaded = ExtractionResult.model_validate_json(
+    Path("exchange.json").read_text(encoding="utf-8"))
+```
+
+```shell
+biometry-parser extract report.pdf --compact -o exchange.json
+```
+
+CLI 預設仍輸出完整結果；`--compact` 不改變辨識流程、雲端授權、資料狀態、
+驗證結果或退出碼，也不重新辨識。serializer 只接受 schema 1.2 的
+`ExtractionResult`；舊版本須先明確遷移。
+
+Compact 文件保留：
+
+- 原有 `source_sha256`、workflow、文件驗證狀態、完整度及 issues。
+- 37 個最終欄位（文件層級 3 個、雙眼各 17 個）的 `candidate_value`、`value`、
+  單位與全部資料／驗證狀態，包含量測日期及 K／TK 軸向。
+- 每張 IOL 表的識別碼、頁碼、眼別、鏡片、公式、K／TK、常數、數值列、
+  選定與highlight狀態、flags及來源辨識器身分；不合併同鏡片的不同表格。
+- 精簡的來源頁／處理狀態 metadata，以及呼叫端提供的 `metadata.biometry_clip`。
+
+不攜帶 `runs`、欄位 `candidates`、bbox、raw_text、選定／highlight 的原文證據及
+大型執行 metadata。`metadata.biometry_parser_exchange` 明列 compact profile
+版本與移除項目。保留的選定狀態仍只是來源宣告；省略證據不會使它成為臨床建議，
+也不可把highlight當成已選定植入。
+
+[Biometry-Clip](https://github.com/eyeduck-ai/biometry-clip) 可將安全的可攜式個案
+及每眼 Toric／LVC／SIA／target 等設定放在 `metadata.biometry_clip` namespace。
+本套件會轉送該 JSON 內容，不解釋、不套用，也不聲稱它來自原始報告。
+只應放本次個案的交換資料，不要放 API key、執行期 token、整份病人資料庫或原始影像。
+
+`value=null` 且 `candidate_value` 有值仍代表有尚未交叉檢核的候選。
+匯入端不可把缺值、conflict、not_measured靜默變成數值，也不可因使用者匯入或核對
+就自動升級為cross_checked。Parser 的 IOL 預測屈光度、目標屈光度及計畫植入度數
+互不等同。跨專案需保留更多來源時，請另外保存完整 canonical 文件；
+compact 匯入後無法重建已移除的證據。
+
+讀取 canonical JSON 可直接使用 `ExtractionResult.model_validate_json()`；
+`BiometryParser.parse()`／CLI `extract` 的輸入仍為 PDF 或圖片，不是 JSON 載入器。
+JSON Schema 可驗證結構，但消費端仍須檢查支援版本、單位及跨欄位狀態規則。

@@ -7,6 +7,7 @@ import sys
 
 from .config import load_config
 from .models import ExtractionResult
+from .exchange import to_exchange_document
 
 
 def _write(value, output=None):
@@ -32,6 +33,7 @@ def _parser():
     extract.add_argument("--pages",nargs="+",type=int,help="Original one-based pages")
     extract.add_argument("--page-strategy",choices=("all","auto","biometry_first"),default="all")
     extract.add_argument("--force-ocr",action="store_true",help="Disable native-text shortcut for the selected workflow")
+    extract.add_argument("--compact", action="store_true", help="Omit heavy recognition evidence from canonical JSON exchange output")
     extract.add_argument("--allow-cloud",action="store_true",help="Explicitly allow the selected remote recognizer to receive images")
     models=commands.add_parser("models")
     model_actions=models.add_subparsers(dest="action",required=True)
@@ -55,7 +57,7 @@ def main(argv=None) -> int:
                 config=config.model_copy(deep=True)
                 config.workflows[config.workflow].native_first=False
             result=extract(args.source,config,pages=args.pages,page_strategy=args.page_strategy,allow_cloud=args.allow_cloud)
-            _write(result,args.output)
+            _write(to_exchange_document(result) if args.compact else result,args.output)
             # Producing candidates does not mean they have clinical verification.
             # Verification remains explicit in the JSON, not encoded as shell success.
             if not result.runs or any(run.outcome != "ok" for run in result.runs):

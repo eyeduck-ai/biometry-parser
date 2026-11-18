@@ -84,9 +84,12 @@ result = BiometryParser(backend="native").parse("report.pdf")
 ```shell
 biometry-parser extract report.pdf -o result.json
 biometry-parser extract report.pdf --backend native -o result.json
+biometry-parser extract report.pdf --compact -o exchange.json
 ```
 
 也支援等效的 `python -m biometry_parser extract ...`。
+
+`--compact` 保留最終量測／狀態與 IOL 數值表，移除大型辨識證據，適合與 Biometry-Clip 交換；預設完整輸出不變。詳見[Compact exchange 契約](docs/data-contract.md#compact-exchange-與-biometry-clip)。
 
 CLI退出碼0表示成功產生可用擷取結果，**不表示已臨床驗證**；2表示部分／失敗／不支援等需檢查的結果，1表示輸入或設定例外。請以JSON內的狀態及issues作為判斷依據。
 

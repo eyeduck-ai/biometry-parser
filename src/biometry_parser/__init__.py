@@ -7,6 +7,8 @@ from .models import (
     PageInput, ParsedPage, ProviderOutput, RunRecord, Span,
 )
 
+from .exchange import to_exchange_document
+
 __version__ = "0.1.0"
 
 
@@ -36,7 +38,7 @@ def plan_pages(source, **options):
 
 
 __all__ = [
-    "BiometryParser", "CloudRecognitionDisabled", "extract", "load_config",
+    "BiometryParser", "CloudRecognitionDisabled", "extract", "load_config", "to_exchange_document",
     "ExtractionConfig", "Profile", "Workflow", "ExtractionResult", "FieldResult",
     "DataStatus", "ProviderOutput", "PageInput", "ParsedPage", "Span", "Box",
     "FieldClaim", "Observation", "RunRecord", "Issue", "IOLCalculation", "IOLRow",
